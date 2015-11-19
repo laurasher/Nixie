@@ -21,8 +21,14 @@ int tube_3_b = 23;
 int tube_3_a = 22;
 
 int rx_byte;    
+String rx_string;
 
-SoftwareSerial ser (0, 1);
+int tube_3_int = 0; 
+int tube_2_int = 0; 
+int tube_1_int = 0;
+int tube_0_int = 0;
+
+//SoftwareSerial ser (0, 1);
 
 void setup() {
   pinMode(tube_0_d, OUTPUT);
@@ -43,7 +49,7 @@ void setup() {
   pinMode(tube_3_a, OUTPUT);
 
   Serial.begin( 9600 ); 
-  ser.begin(9600);
+//  ser.begin(9600);
 
 }
 
@@ -68,6 +74,18 @@ void writeTube_0(int num){
   digitalWrite(tube_0_c, c);
   digitalWrite(tube_0_b, b);
   digitalWrite(tube_0_a, a);
+  digitalWrite(tube_3_d, 15);
+  digitalWrite(tube_3_c, 15);
+  digitalWrite(tube_3_b, 15);
+  digitalWrite(tube_3_a, 15);
+  digitalWrite(tube_2_d, 15);
+  digitalWrite(tube_2_c, 15);
+  digitalWrite(tube_2_b, 15);
+  digitalWrite(tube_2_a, 15);
+  digitalWrite(tube_1_d, 15);
+  digitalWrite(tube_1_c, 15);
+  digitalWrite(tube_1_b, 15);
+  digitalWrite(tube_1_a, 15);
 }
 
 void writeTube_1(int num){
@@ -90,6 +108,18 @@ void writeTube_1(int num){
   digitalWrite(tube_1_c, c);
   digitalWrite(tube_1_b, b);
   digitalWrite(tube_1_a, a);
+  digitalWrite(tube_2_d, 15);
+  digitalWrite(tube_2_c, 15);
+  digitalWrite(tube_2_b, 15);
+  digitalWrite(tube_2_a, 15);
+  digitalWrite(tube_3_d, 15);
+  digitalWrite(tube_3_c, 15);
+  digitalWrite(tube_3_b, 15);
+  digitalWrite(tube_3_a, 15);
+  digitalWrite(tube_0_d, 15);
+  digitalWrite(tube_0_c, 15);
+  digitalWrite(tube_0_b, 15);
+  digitalWrite(tube_0_a, 15);
 }
 
 void writeTube_2(int num){
@@ -112,6 +142,18 @@ void writeTube_2(int num){
   digitalWrite(tube_2_c, c);
   digitalWrite(tube_2_b, b);
   digitalWrite(tube_2_a, a);
+  digitalWrite(tube_3_d, 15);
+  digitalWrite(tube_3_c, 15);
+  digitalWrite(tube_3_b, 15);
+  digitalWrite(tube_3_a, 15);
+  digitalWrite(tube_1_d, 15);
+  digitalWrite(tube_1_c, 15);
+  digitalWrite(tube_1_b, 15);
+  digitalWrite(tube_1_a, 15);
+  digitalWrite(tube_0_d, 15);
+  digitalWrite(tube_0_c, 15);
+  digitalWrite(tube_0_b, 15);
+  digitalWrite(tube_0_a, 15);
 }
 
 void writeTube_3(int num){
@@ -134,46 +176,337 @@ void writeTube_3(int num){
   digitalWrite(tube_3_c, c);
   digitalWrite(tube_3_b, b);
   digitalWrite(tube_3_a, a);
+  digitalWrite(tube_2_d, 15);
+  digitalWrite(tube_2_c, 15);
+  digitalWrite(tube_2_b, 15);
+  digitalWrite(tube_2_a, 15);
+  digitalWrite(tube_1_d, 15);
+  digitalWrite(tube_1_c, 15);
+  digitalWrite(tube_1_b, 15);
+  digitalWrite(tube_1_a, 15);
+  digitalWrite(tube_0_d, 15);
+  digitalWrite(tube_0_c, 15);
+  digitalWrite(tube_0_b, 15);
+  digitalWrite(tube_0_a, 15);
 }
 
 void loop() {
 
-  if( Serial.available() > 0 ) {      
-      rx_byte = Serial.read();  
-      ser.println(rx_byte);
+/// Collect follower digits
+  if( Serial.available() > 0 ) {
+      rx_string = Serial.readStringUntil('g');
+      rx_byte = atoi(rx_string.c_str());
+      if (rx_byte > 1000){      
+        tube_3_int = floor( rx_byte/1000 ); 
+        tube_2_int = floor( (rx_byte-1000) /100); 
+        tube_1_int = floor( (rx_byte-tube_3_int*1000-tube_2_int*100)/10 );
+        tube_0_int = rx_byte-tube_3_int*1000-tube_2_int*100-tube_1_int*10;
+        
+        writeTube_3(tube_3_int); 
+        delay(200);
+        writeTube_2(tube_2_int);
+        delay(200);
+        writeTube_1(tube_1_int);
+        delay(200); 
+        writeTube_0(tube_0_int);
+        delay(1600);
+      }  
+      else {
+//      writeTube_3(15); 
+//      writeTube_2(15); 
+//      writeTube_1(15); 
+//      writeTube_0(15); 
+      cycle_all_tubes();  
+      }
     }
-    
-//int tube_3_int = rx_byte;
-//delay(1200);
-//int tube_2_int = rx_byte;
-//delay(1200);
-//int tube_1_int = rx_byte;
-//delay(1200);
-//int tube_0_int = rx_byte;
-//  int tube_3_int = floor(rx_byte/1000); 
-//  int tube_2_int = floor( (rx_byte-1000) /100); 
-    int tube_3_int = 5;
-    
-  writeTube_3(tube_3_int); 
-  writeTube_2(4); 
-  writeTube_1(3); 
-  writeTube_0(2);
-  delay(1200);
-  writeTube_3(2); 
-  writeTube_2(tube_3_int); 
-  writeTube_1(4); 
-  writeTube_0(3);
-  delay(1200);
-  writeTube_3(2); 
-  writeTube_2(3); 
-  writeTube_1(tube_3_int); 
-  writeTube_0(4);
-  delay(1200);
-  writeTube_3(2); 
-  writeTube_2(3); 
-  writeTube_1(4); 
-  writeTube_0(tube_3_int);
-  delay(1200);
+   
 
+//  cycle_all_tubes(); 
 
 }
+
+
+
+void writeFourNixies(int num3, int num2, int num1, int num0){
+        
+  int d_3=15; int c_3=15; int b_3=15; int a_3=15;
+  int d_2=15; int c_2=15; int b_2=15; int a_2=15;
+  int d_1=15; int c_1=15; int b_1=15; int a_1=15;
+  int d_0=15; int c_0=15; int b_0=15; int a_0=15;
+   
+
+  
+  
+  digitalWrite(tube_3_d, d_3);
+  digitalWrite(tube_3_c, c_3);
+  digitalWrite(tube_3_b, b_3);
+  digitalWrite(tube_3_a, a_3);
+  digitalWrite(tube_2_d, d_2);
+  digitalWrite(tube_2_c, c_2);
+  digitalWrite(tube_2_b, c_1);
+  digitalWrite(tube_2_a, c_0);
+  digitalWrite(tube_1_d, d_1);
+  digitalWrite(tube_1_c, c_1);
+  digitalWrite(tube_1_b, b_1);
+  digitalWrite(tube_1_a, a_1);
+  digitalWrite(tube_0_d, d_0);
+  digitalWrite(tube_0_c, c_0);
+  digitalWrite(tube_0_b, b_0);
+  digitalWrite(tube_0_a, a_0);
+}
+
+void cycle_all_tubes(){
+  int del = 800;
+  writeTube_3(9); 
+  delay(del);
+  writeTube_3(8);
+  delay(del);
+  writeTube_3(7);
+  delay(del);
+  writeTube_3(6);
+  delay(del);
+  writeTube_3(5);
+  delay(del);
+  writeTube_3(4);
+  delay(del);
+  writeTube_3(3);
+  delay(del);
+  writeTube_3(2);
+  delay(del);
+  writeTube_3(1);
+  delay(del);
+  writeTube_3(0);
+  delay(del);
+  writeTube_2(9); 
+  delay(del);
+  writeTube_2(8);
+  delay(del);
+  writeTube_2(7);
+  delay(del);
+  writeTube_2(6);
+  delay(del);
+  writeTube_2(5);
+  delay(del);
+  writeTube_2(4);
+  delay(del);
+  writeTube_2(3);
+  delay(del);
+  writeTube_2(2);
+  delay(del);
+  writeTube_2(1);
+  delay(del);
+  writeTube_2(0);
+  delay(del);
+  writeTube_1(9); 
+  delay(del);
+  writeTube_1(8);
+  delay(del);
+  writeTube_1(7);
+  delay(del);
+  writeTube_1(6);
+  delay(del);
+  writeTube_1(5);
+  delay(del);
+  writeTube_1(4);
+  delay(del);
+  writeTube_1(3);
+  delay(del);
+  writeTube_1(2);
+  delay(del);
+  writeTube_1(1);
+  delay(del);
+  writeTube_1(0);
+  delay(del);
+  writeTube_0(9); 
+  delay(del);
+  writeTube_0(8);
+  delay(del);
+  writeTube_0(7);
+  delay(del);
+  writeTube_0(6);
+  delay(del);
+  writeTube_0(5);
+  delay(del);
+  writeTube_0(4);
+  delay(del);
+  writeTube_0(3);
+  delay(del);
+  writeTube_0(2);
+  delay(del);
+  writeTube_0(1);
+  delay(del);
+  writeTube_0(0);
+  delay(1000);
+}
+void cycle_top_two_tubes(){
+  int del = 800;
+  writeTube_3(9); 
+  delay(del);
+  writeTube_3(8);
+  delay(del);
+  writeTube_3(7);
+  delay(del);
+  writeTube_3(6);
+  delay(del);
+  writeTube_3(5);
+  delay(del);
+  writeTube_3(4);
+  delay(del);
+  writeTube_3(3);
+  delay(del);
+  writeTube_3(2);
+  delay(del);
+  writeTube_3(1);
+  delay(del);
+  writeTube_3(0);
+  delay(del);
+  writeTube_2(9); 
+  delay(del);
+  writeTube_2(8);
+  delay(del);
+  writeTube_2(7);
+  delay(del);
+  writeTube_2(6);
+  delay(del);
+  writeTube_2(5);
+  delay(del);
+  writeTube_2(4);
+  delay(del);
+  writeTube_2(3);
+  delay(del);
+  writeTube_2(2);
+  delay(del);
+  writeTube_2(1);
+  delay(del);
+  writeTube_2(0);
+//  delay(del);
+//  writeTube_1(9); 
+//  delay(del);
+//  writeTube_1(8);
+//  delay(del);
+//  writeTube_1(7);
+//  delay(del);
+//  writeTube_1(6);
+//  delay(del);
+//  writeTube_1(5);
+//  delay(del);
+//  writeTube_1(4);
+//  delay(del);
+//  writeTube_1(3);
+//  delay(del);
+//  writeTube_1(2);
+//  delay(del);
+//  writeTube_1(1);
+//  delay(del);
+//  writeTube_1(0);
+//  delay(del);
+//  writeTube_0(9); 
+//  delay(del);
+//  writeTube_0(8);
+//  delay(del);
+//  writeTube_0(7);
+//  delay(del);
+//  writeTube_0(6);
+//  delay(del);
+//  writeTube_0(5);
+//  delay(del);
+//  writeTube_0(4);
+//  delay(del);
+//  writeTube_0(3);
+//  delay(del);
+//  writeTube_0(2);
+//  delay(del);
+//  writeTube_0(1);
+//  delay(del);
+//  writeTube_0(0);
+  delay(1000);
+}
+
+void cycle_bottom_two_tubes(){
+  int del = 800;
+//  writeTube_3(9); 
+//  delay(del);
+//  writeTube_3(8);
+//  delay(del);
+//  writeTube_3(7);
+//  delay(del);
+//  writeTube_3(6);
+//  delay(del);
+//  writeTube_3(5);
+//  delay(del);
+//  writeTube_3(4);
+//  delay(del);
+//  writeTube_3(3);
+//  delay(del);
+//  writeTube_3(2);
+//  delay(del);
+//  writeTube_3(1);
+//  delay(del);
+//  writeTube_3(0);
+//  delay(del);
+//  writeTube_2(9); 
+//  delay(del);
+//  writeTube_2(8);
+//  delay(del);
+//  writeTube_2(7);
+//  delay(del);
+//  writeTube_2(6);
+//  delay(del);
+//  writeTube_2(5);
+//  delay(del);
+//  writeTube_2(4);
+//  delay(del);
+//  writeTube_2(3);
+//  delay(del);
+//  writeTube_2(2);
+//  delay(del);
+//  writeTube_2(1);
+//  delay(del);
+//  writeTube_2(0);
+  delay(del);
+  writeTube_1(9); 
+  delay(del);
+  writeTube_1(8);
+  delay(del);
+  writeTube_1(7);
+  delay(del);
+  writeTube_1(6);
+  delay(del);
+  writeTube_1(5);
+  delay(del);
+  writeTube_1(4);
+  delay(del);
+  writeTube_1(3);
+  delay(del);
+  writeTube_1(2);
+  delay(del);
+  writeTube_1(1);
+  delay(del);
+  writeTube_1(0);
+  delay(del);
+  writeTube_0(9); 
+  delay(del);
+  writeTube_0(8);
+  delay(del);
+  writeTube_0(7);
+  delay(del);
+  writeTube_0(6);
+  delay(del);
+  writeTube_0(5);
+  delay(del);
+  writeTube_0(4);
+  delay(del);
+  writeTube_0(3);
+  delay(del);
+  writeTube_0(2);
+  delay(del);
+  writeTube_0(1);
+  delay(del);
+  writeTube_0(0);
+  delay(1000);
+
+}
+
+
+
+
