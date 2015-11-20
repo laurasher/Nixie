@@ -60,11 +60,9 @@ void loop() {
   if( Serial.available() > 0 ) {
       timeout = millis();
       rx_string = Serial.readStringUntil('g');
-      int backup_last_rxbyte = 
       last_rx_byte = rx_byte;
       rx_byte = atoi(rx_string.c_str());
       
-      if (rx_byte > 1000){   
         last_tube_3_int = floor( last_rx_byte/1000 ); 
         last_tube_2_int = floor( (last_rx_byte-1000) /100); 
         last_tube_1_int = floor( (last_rx_byte-last_tube_3_int*1000-last_tube_2_int*100)/10 );
@@ -75,13 +73,26 @@ void loop() {
         tube_1_int = floor( (rx_byte-tube_3_int*1000-tube_2_int*100)/10 );
         tube_0_int = rx_byte-tube_3_int*1000-tube_2_int*100-tube_1_int*10;
 
-        int anim = checkUpDown(last_rx_byte, rx_byte); //if 2, animate down. if 1, animate up. if 0, do nothing
-        switch( anim ){
-          case 0: { break; }//do nothing
-          case 1: animUp(last_tube_3_int,last_tube_2_int,last_tube_1_int,last_tube_0_int,tube_3_int,tube_2_int,tube_1_int,tube_0_int, rx_byte-last_rx_byte); break;
-          case 2: animDown(last_tube_3_int,last_tube_2_int,last_tube_1_int,last_tube_0_int,tube_3_int,tube_2_int,tube_1_int,tube_0_int, rx_byte-last_rx_byte); break;
-          default: break;
-        }
+//        int anim = checkUpDown(last_rx_byte, rx_byte); //if 2, animate down. if 1, animate up. if 0, do nothing
+//        switch( anim ){
+//          case 0: { 
+//             int i = 400; 
+//            int del = 5;
+//            while(i>0){
+//              writeTube_3(tube_3_int); 
+//              delay(del);
+//              writeTube_2(tube_2_int);
+//              delay(del);
+//              writeTube_1(tube_1_int);
+//              delay(del); 
+//              writeTube_0(tube_0_int);
+//              delay(del);
+//              i--;
+//            } break; }//do nothing
+//          case 1: animUp(last_tube_3_int,last_tube_2_int,last_tube_1_int,last_tube_0_int,tube_3_int,tube_2_int,tube_1_int,tube_0_int, rx_byte-last_rx_byte); break;
+//          case 2: animDown(last_tube_3_int,last_tube_2_int,last_tube_1_int,last_tube_0_int,tube_3_int,tube_2_int,tube_1_int,tube_0_int, rx_byte-last_rx_byte); break;
+//          default: break;
+//        }
         
         int i = 400; 
         int del = 5;
@@ -96,22 +107,10 @@ void loop() {
             delay(del);
             i--;
         }
-      }  
-      else {
-//              int i = 800; 
-//              int del = 5;
-//              while(i>0){
-//                  writeTube_3(tube_3_int); 
-//                  delay(del);
-//                  writeTube_2(tube_2_int);
-//                  delay(del);
-//                  writeTube_1(tube_1_int);
-//                  delay(del); 
-//                  writeTube_0(tube_0_int);
-//                  delay(del);
-//                  i--;
-//               }
-              int i = 10000; 
+    }
+      
+    else  {
+              int i = 4000000; 
               int del = 5;
               while(i>0){
                 if( Serial.available() > 0 ) {
@@ -127,27 +126,7 @@ void loop() {
                   delay(del);
                   i--;
                }
-      }
-      
     }
-//    else if (timeout > 3000){
-//      int i = 10000; 
-//              int del = 5;
-//              while(i>0){
-//                if( Serial.available() > 0 ) {
-//                  break;
-//                }
-//                  writeTube_3(tube_3_int); 
-//                  delay(del);
-//                  writeTube_2(tube_2_int);
-//                  delay(del);
-//                  writeTube_1(tube_1_int);
-//                  delay(del); 
-//                  writeTube_0(tube_0_int);
-//                  delay(del);
-//                  i--;
-//               }
-//    }
 }
 
 
